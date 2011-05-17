@@ -234,11 +234,31 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 - (void) gameMovementEnemy
 {
-	if (difference < 0 && enemy.enemyType != 4)
+	if (difference < 0 && enemy.enemyType != 4 && enemy.enemyType != 3)
 	{
 		enemy.position = ccp(enemy.position.x, enemy.position.y + difference); 
 		enemy.ybase = enemy.ybase + difference; 	
 	}
+    
+	int type = 0;
+
+    int height = difToInt/10;
+    
+    if(height > startWater) { enemy.visible = NO; type = 1; }
+    
+    if(height > startPlanet) { 
+        enemy.visible = YES;type = 2;                 
+        if(bubble.visible == YES) 
+        {bubble.visible = NO;}
+    } 
+    
+    if(height > startSpace) { enemy.visible = NO; type = 3; } 
+    
+    if(height > startHeaven) { if(enemyemitter.visible == YES) { enemyemitter.visible = NO; enemy.meteorActive = NO; }}
+        
+    // heaven/god
+    if(height > startGod) { enemy.visible = YES; type = 4; }
+    
     if (enemy.enemyType == 1) { 
         if(enemy.bubbleActive == NO) {
             int randomPoop = random() % 3800; 
@@ -270,10 +290,10 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
         if(enemy.birdPoopActive == NO) {
             int randomPoop = random() % 3000; 
             if(randomPoop > 2965) {
-            birdPoop = [Enemy spriteWithFile:@"poop.png" rect:CGRectMake(0,0,20,20)]; 
-            [birdPoop setPosition:ccp(enemy.position.x, enemy.position.y)]; 
-            [self addChild:birdPoop z:3];
-            enemy.birdPoopActive = YES; 
+                birdPoop = [Enemy spriteWithFile:@"poop.png" rect:CGRectMake(0,0,20,20)]; 
+                [birdPoop setPosition:ccp(enemy.position.x, enemy.position.y)]; 
+                [self addChild:birdPoop z:3];
+                enemy.birdPoopActive = YES; 
             }
         }
         if(enemy.birdPoopActive == YES) {
@@ -291,74 +311,75 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     }
     
     if(enemy.enemyType == 3) {
+        if(enemy.birdPoopActive) { enemy.birdPoopActive = NO; birdPoop.visible = NO; } 
         int randomPoop = random() % 200; 
         if(randomPoop > 150) {
-
-        if(enemy.meteorActive == NO) { 
-            int picker = random() % 6;
-            if(picker == 0) picker = random() % 6; 
-            if(picker == 0) picker = random() % 6; 
-            if(picker == 0) picker = 1; 
             
-            switch (picker)
-            {
-                case 1:
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
-                    enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 1;
-                    break; 
-                    
-                case 2: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor2.plist"];
-                    enemyemitter.position = ccp(-200, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 2; 
-                    break;
-                    
-                case 3: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor3.plist"];
-                    enemyemitter.position = ccp(screenWidth - random() % 300, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 3; 
-                    break;
-                    
-                case 4: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor4.plist"];
-                    enemyemitter.position = ccp(-200, screenHeight - random() % 150); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-                    
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 4; 
-                    break;
-                    
-                case 5: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor5.plist"];
-                    enemyemitter.position = ccp(screenWidth + 200, screenHeight - random() % 150); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 5; 
-                    break; 
-                    
-                default:
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
-                    enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-                    
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 1; 
-                    break;
+            if(enemy.meteorActive == NO) { 
+                int picker = random() % 6;
+                if(picker == 0) picker = random() % 6; 
+                if(picker == 0) picker = random() % 6; 
+                if(picker == 0) picker = 1; 
+                
+                switch (picker)
+                {
+                    case 1:
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
+                        enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 1;
+                        break; 
+                        
+                    case 2: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor2.plist"];
+                        enemyemitter.position = ccp(-200, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 2; 
+                        break;
+                        
+                    case 3: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor3.plist"];
+                        enemyemitter.position = ccp(screenWidth - random() % 300, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 3; 
+                        break;
+                        
+                    case 4: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor4.plist"];
+                        enemyemitter.position = ccp(-200, screenHeight - random() % 150); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 4; 
+                        break;
+                        
+                    case 5: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor5.plist"];
+                        enemyemitter.position = ccp(screenWidth + 200, screenHeight - random() % 150); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 5; 
+                        break; 
+                        
+                    default:
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
+                        enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 1; 
+                        break;
+                }
+                
+                enemy.meteorActive = YES; 
             }
-
-            enemy.meteorActive = YES; 
-        }
         }
         if(enemy.meteorActive == YES) {
             if(enemy.direction == 1) { 
@@ -391,32 +412,14 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
                     enemy.meteorActive = NO; 
                 }
             }
-
+            
         }
     }
     if(enemy.enemyType == 4) {
         beactive = YES; 
         btype = 4; 
     }
-    
-	int type = 0;
 
-    int height = difToInt/10;
-    
-    if(height > startWater) { enemy.visible = NO; type = 1; }
-    
-    if(height > startPlanet) { 
-        enemy.visible = YES;type = 2;                 
-        if(bubble.visible == YES) 
-        {bubble.visible = NO;}
-    } 
-    
-    if(height > startSpace) { enemy.visible = NO; type = 3; } 
-    
-    if(height > startHeaven) { if(enemyemitter.visible == YES) { enemyemitter.visible = NO; enemy.meteorActive = NO; }}
-        
-    // heaven/god
-    if(height > startGod) { enemy.visible = YES; type = 4; }
     
 	[enemy effect:type];
 }
