@@ -5,6 +5,7 @@
 //  Created by Andy Girvan on 19/01/2011.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
+
 #import "Gameplay_Challenge.h"
 #import "AppSpecificValues.h"
 #import "GameSpecificValues.h"
@@ -32,7 +33,7 @@ Enemy  *enemy;
 Enemy *birdPoop, *bubble; 
 Powerup *pu;
 PowerupEffect *pue, *bouncycastle;
-CCParticleExplosion *emitter, *enemyemitter, *bcfx,*collectableEmit;
+CCParticleExplosion *emitter, *enemyemitter, *bcfx;
 
 // Sprites
 CCSprite *bg[bgcount], *lifeCounter[3], *splatter;
@@ -78,46 +79,49 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 -(id) init
 {
-    NSLog(@"Loaded"); 
-    challengeMode = YES; 
-    NSLog(@"CM Enabled"); 
-    if(challengeMode) [self initChallenge];
+	if( (self=[super init] )) { 
+        NSLog(@"Loaded"); 
+        challengeMode = YES; 
+        NSLog(@"CM Enabled"); 
+        if(challengeMode) [self initChallenge];
         NSLog(@"CM Init"); 
-	[self initAudio];
-    NSLog(@"audio Init"); 
+        [self initAudio];
+        NSLog(@"audio Init"); 
+        
+        [self initScore];
+        NSLog(@"initScore Init"); 
+        
+        [self initLabels]; 
+        NSLog(@"initLabels Init"); 
+        
+        [self initButtons];
+        NSLog(@"initButtons Init"); 
+        
+        [self initWorld];        NSLog(@"initWorld Init"); 
+        
+        [self initPlatforms];
+        NSLog(@"initPlatforms Init"); 
+        
+        [self initCharacters];
+        NSLog(@"initCharacters Init"); 
+        
+        [self initEnemies];
+        NSLog(@"initEnemies Init"); 
+        
+        [self initPowerups];         NSLog(@"initPowerups Init"); 
+        
+        [self resetNumbers];        NSLog(@"resetNumbers Init"); 
+        
+        
+        [self schedule:@selector(gameLoop:) interval:0];
+        [self schedule:@selector(timerScore:) interval:1.0f];
+        [self schedule:@selector(timerPower:) interval:1.0f];
+        [self schedule:@selector(timerEffect:) interval:1.0f];
+        [self schedule:@selector(timerBadEffect:) interval:1.0f];    
+        [self schedule:@selector(timerDropin:) interval:1.0f];   
 
-	[self initScore];
-    NSLog(@"initScore Init"); 
-
-	[self initLabels]; 
-    NSLog(@"initLabels Init"); 
-
-	[self initButtons];
-    NSLog(@"initButtons Init"); 
-
-	[self initWorld];        NSLog(@"initWorld Init"); 
-
-	[self initPlatforms];
-    NSLog(@"initPlatforms Init"); 
-
-	[self initCharacters];
-    NSLog(@"initCharacters Init"); 
-
-	[self initEnemies];
-    NSLog(@"initEnemies Init"); 
-
-	[self initPowerups];         NSLog(@"initPowerups Init"); 
-
-	[self resetNumbers];        NSLog(@"resetNumbers Init"); 
-
-	
-	[self schedule:@selector(gameLoop:) interval:0];
-	[self schedule:@selector(timerScore:) interval:1.0f];
-   	[self schedule:@selector(timerPower:) interval:1.0f];
-    [self schedule:@selector(timerEffect:) interval:1.0f];
-    [self schedule:@selector(timerBadEffect:) interval:1.0f];    
-    [self schedule:@selector(timerDropin:) interval:1.0f];   
-	if( (self=[super init] )) { [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:YES]; }
+        [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:YES]; 
+    }
 	return self;
 }
 
