@@ -435,10 +435,21 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     }
     for(int i = 0; i < collectableCount; i++) 
     {
-        if(collectable[i].position.y < -100) {
-            collectable[i].position = ccp(rand() % screenWidth, collectable[i].position.y + (screenHeight + rand() % 300));
-            if(collectable[i].position.x < 20) { collectable[i].position = ccp(collectable[i].position.x + 20, collectable[i].position.y); }
-            if(collectable[i].position.x > 300) { collectable[i].position = ccp(collectable[i].position.x - 20, collectable[i].position.y); }
+                
+        float viewWidth = screenWidth; 
+		float fViewWidthMinusPlatformWidth = viewWidth - 75.0f;
+		int iViewWidthMinusPlatformWidth = (int)fViewWidthMinusPlatformWidth; 		
+
+        
+        if(collectable[i].position.y < ((random() % 400) * -1)) {
+            float x = random() % iViewWidthMinusPlatformWidth; 
+			x = x + 22.5f; 
+            
+			float y = screenHeight + (random() % 600);
+			if(y < 510) y = 510; 
+			
+			collectable[i].position = ccp(x,y);
+
             collectable[i].visible = YES; 
         }
         
@@ -699,7 +710,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 			platform[i].velocity = ccp(0,0);
             CCTexture2D *imageSwap = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"hell-platform.png"]];
             [platform[i] setTexture: imageSwap];
-            [imageSwap autorelease];
+            [imageSwap release];
 		}
 	}	
 }
