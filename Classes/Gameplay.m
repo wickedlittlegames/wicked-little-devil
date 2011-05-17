@@ -16,7 +16,6 @@
 #import "PowerupEffect.h"
 
 #import	"MainMenu.h"
-#import	"MainMenu_challenge.h"
 
 #import "SimpleAudioEngine.h"
 

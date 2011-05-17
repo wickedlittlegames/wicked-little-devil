@@ -15,7 +15,6 @@
 #import "Powerup.h"
 #import "PowerupEffect.h"
 
-#import	"MainMenu.h"
 #import	"MainMenu_challenge.h"
 
 #import "SimpleAudioEngine.h"
@@ -79,18 +78,38 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 -(id) init
 {
+    NSLog(@"Loaded"); 
     challengeMode = YES; 
+    NSLog(@"CM Enabled"); 
     if(challengeMode) [self initChallenge];
+        NSLog(@"CM Init"); 
 	[self initAudio];
+    NSLog(@"audio Init"); 
+
 	[self initScore];
+    NSLog(@"initScore Init"); 
+
 	[self initLabels]; 
+    NSLog(@"initLabels Init"); 
+
 	[self initButtons];
-	[self initWorld];
+    NSLog(@"initButtons Init"); 
+
+	[self initWorld];        NSLog(@"initWorld Init"); 
+
 	[self initPlatforms];
+    NSLog(@"initPlatforms Init"); 
+
 	[self initCharacters];
+    NSLog(@"initCharacters Init"); 
+
 	[self initEnemies];
-	[self initPowerups]; 
-	[self resetNumbers];
+    NSLog(@"initEnemies Init"); 
+
+	[self initPowerups];         NSLog(@"initPowerups Init"); 
+
+	[self resetNumbers];        NSLog(@"resetNumbers Init"); 
+
 	
 	[self schedule:@selector(gameLoop:) interval:0];
 	[self schedule:@selector(timerScore:) interval:1.0f];
@@ -1170,10 +1189,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 }
 - (void) mainMenu: (id) sender
 {
-	if (challengeMode)
 		[[CCDirector sharedDirector] replaceScene:[MainMenu_challenge scene]];
-	else
-		[[CCDirector sharedDirector] replaceScene:[MainMenu scene]];
 }
 
 - (void) restartGame: (id) sender
