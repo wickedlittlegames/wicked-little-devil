@@ -80,37 +80,27 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 -(id) init
 {
 	if( (self=[super init] )) { 
-        NSLog(@"Loaded"); 
         challengeMode = YES; 
-        NSLog(@"CM Enabled"); 
         if(challengeMode) [self initChallenge];
-        NSLog(@"CM Init"); 
         [self initAudio];
-        NSLog(@"audio Init"); 
         
         [self initScore];
-        NSLog(@"initScore Init"); 
         
         [self initLabels]; 
-        NSLog(@"initLabels Init"); 
         
         [self initButtons];
-        NSLog(@"initButtons Init"); 
         
-        [self initWorld];        NSLog(@"initWorld Init"); 
+        [self initWorld];    
         
         [self initPlatforms];
-        NSLog(@"initPlatforms Init"); 
         
         [self initCharacters];
-        NSLog(@"initCharacters Init"); 
         
         [self initEnemies];
-        NSLog(@"initEnemies Init"); 
         
-        [self initPowerups];         NSLog(@"initPowerups Init"); 
+        [self initPowerups];    
         
-        [self resetNumbers];        NSLog(@"resetNumbers Init"); 
+        [self resetNumbers];      
         
         
         [self schedule:@selector(gameLoop:) interval:0];
