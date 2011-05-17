@@ -31,7 +31,7 @@ Platform *gameFloor, *platform[platformCount];
 Player *devil;
 Enemy  *enemy;
 Enemy *birdPoop, *bubble; 
-Powerup *pu, *collectable[collectableCount];
+Powerup *pu;
 PowerupEffect *pue, *bouncycastle;
 CCParticleExplosion *emitter, *enemyemitter, *bcfx,*collectableEmit;
 
@@ -432,41 +432,6 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     {
         ptime = 0;
         [pu reset];
-    }
-    for(int i = 0; i < collectableCount; i++) 
-    {
-                
-        float viewWidth = screenWidth; 
-		float fViewWidthMinusPlatformWidth = viewWidth - 75.0f;
-		int iViewWidthMinusPlatformWidth = (int)fViewWidthMinusPlatformWidth; 		
-
-        
-        if(collectable[i].position.y < ((random() % 400) * -1)) {
-            float x = random() % iViewWidthMinusPlatformWidth; 
-			x = x + 22.5f; 
-            
-			float y = screenHeight + (random() % 600);
-			if(y < 510) y = 510; 
-			
-			collectable[i].position = ccp(x,y);
-
-            collectable[i].visible = YES; 
-        }
-        
-        if(collectable[i].visible) { 
-            if( CGRectIntersectsRect([devil getBoundingRect], [collectable[i] getBoundingRect])) {
-                collectable[i].visible = NO; 
-                bonusScore = bonusScore + 10;
-                NSString *updateScore = [NSString stringWithFormat:@"Bonus: %d",bonusScore]; 
-                [bonusCounter setString:updateScore];
-                bonusCounter.position = ccp((screenWidth - bonusCounter.contentSize.width/2) - 5, bonusCounter.position.y);
-            }
-        }
-        if (difference < 0)
-        {
-            pu.position = ccp(pu.position.x, pu.position.y + difference); 
-            collectable[i].position = ccp(collectable[i].position.x, collectable[i].position.y + difference); 
-        }
     }
 }
 
@@ -1077,21 +1042,6 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     bouncycastle = [PowerupEffect spriteWithFile:@"bouncycastle-bg.png"];                       
     [bouncycastle setPosition:ccp(screenWidth/2,-150)];
     [self addChild:bouncycastle z:3];
-
-    int x = 0; 
-    int y = 0; 
-    for (int i = 0; i < collectableCount; i++) 
-    {
-        collectable[i] = [Powerup spriteWithFile:@"25x25.png"];
-        if(i == 0) { x = 225; y = 420; }
-		if(i == 1) { x = 50;  y = 330; }
-		if(i == 2) { x = 100; y = 250; }
-		if(i == 3) { x = 250; y = 355; }
-		if(i == 4) { x = 85;  y = 155; }
-		if(i == 5) { x = 300; y = 430; }
-        [collectable[i] setPosition:ccp(x, y)];
-        [self addChild:collectable[i] z:3];
-    }
 }
 
 - (void) initScore
