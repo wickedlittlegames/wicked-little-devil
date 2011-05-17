@@ -6,6 +6,7 @@
 #define bgspeed 6
 #define bgcount 25
 #define	platformCount  8
+#define collectableCount 6
 
 // Maths Constants
 #define	touchDiff 4
