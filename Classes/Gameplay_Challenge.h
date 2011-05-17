@@ -9,15 +9,15 @@
 #import <GameKit/GameKit.h>
 #import "cocos2d.h"
 
-@interface Gameplay : CCLayer 
+@interface Gameplay_Challenge : CCLayer 
 {
 	CGPoint touchLocation;
-	bool gameStarted, beactive,godpoweractive,godpowerEffectActive,dropinActive,resuming; 
+	bool challengeMode, gameStarted, beactive,godpoweractive,godpowerEffectActive,dropinActive,resuming; 
 	int difToInt, scoreInt, highScore, ptime, btime,btype,godpower,godpowerType,dtime;
 }
 
 @property (nonatomic) int difToInt, scoreInt, highScore, ptime, etime, btime, btype,godpower,godpowerType,dtime;
-@property (nonatomic) bool gameStarted, top, beactive,godpoweractive, godpowerEffectActive,dropinActive,resuming;
+@property (nonatomic) bool challengeMode, gameStarted, top, beactive,godpoweractive, godpowerEffectActive,dropinActive,resuming;
 @property (nonatomic) CGPoint touchLocation;
 
 // returns a Scene that contains the HelloWorld as the only child

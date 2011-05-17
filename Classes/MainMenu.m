@@ -150,13 +150,7 @@ NSURL *url;
 
 - (void) startGame: (id) sender
 {
-	CCScene *sceneNew = [CCScene node];
-	Gameplay *layerNew = [Gameplay node];
-	layerNew.challengeMode = NO;
-	[layerNew buildGame]; 
-	[sceneNew addChild: layerNew];
-	
-	[[CCDirector sharedDirector] replaceScene:sceneNew];
+	[[CCDirector sharedDirector] replaceScene:[Gameplay scene]];
 }
 - (void) menuStandard: (id) sender
 {

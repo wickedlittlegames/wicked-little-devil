@@ -5,7 +5,7 @@
 //  Created by Andy Girvan on 19/01/2011.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
-#import "Gameplay.h"
+#import "Gameplay_Challenge.h"
 #import "AppSpecificValues.h"
 #import "GameSpecificValues.h"
 
@@ -33,7 +33,7 @@ Enemy  *enemy;
 Enemy *birdPoop, *bubble; 
 Powerup *pu;
 PowerupEffect *pue, *bouncycastle;
-CCParticleExplosion *emitter, *enemyemitter, *bcfx, *collectableEmit;
+CCParticleExplosion *emitter, *enemyemitter, *bcfx,*collectableEmit;
 
 // Sprites
 CCSprite *bg[bgcount], *lifeCounter[3], *splatter;
@@ -46,64 +46,59 @@ CCMenu *mutemenu;
 
 // Text
 NSString *highScoreText, *currentScoreText, *bonusScoreText;
-NSString *devilIMG			= @"Devil.png";
-NSString *platformIMG		= @"hell-platform.png";
-NSString *pauseIMG			= @"pause.png";
-NSString *muteIMG			= @"mute-soundon.png";
-NSString *floorIMG			= @"floor.png";
-NSString *platformSFX		= @"popLow.mp3";
-NSString *platformGFX		= @"explosion.plist";
-NSString *font				= @"Futura";
-NSString *lifeIMG			= @"spring.png";
-NSString *deadIMG			= @"dead.png";
-NSString *mainmenuIMG		= @"mainmenu.png";
-NSString *restartmenuIMG	= @"restartmenu.png";
-NSString *infoIMG			= @"info.png";
-NSString *dropinNumber      = @"0";
+NSString *devilIMG_chal			= @"Devil.png";
+NSString *platformIMG_chal		= @"hell-platform.png";
+NSString *pauseIMG_chal			= @"pause.png";
+NSString *muteIMG_chal			= @"mute-soundon.png";
+NSString *floorIMG_chal			= @"floor.png";
+NSString *platformSFX_chal		= @"popLow.mp3";
+NSString *platformGFX_chal		= @"explosion.plist";
+NSString *font_chal				= @"Futura";
+NSString *lifeIMG_chal			= @"spring.png";
+NSString *deadIMG_chal			= @"dead.png";
+NSString *mainmenuIMG_chal		= @"mainmenu.png";
+NSString *restartmenuIMG_chal	= @"restartmenu.png";
+NSString *infoIMG_chal			= @"info.png";
+NSString *dropinNumber_chal      = @"0";
 
 BOOL added;
 float difference;
 
-@implementation Gameplay
-@synthesize touchLocation, gameStarted, 
+@implementation Gameplay_Challenge
+@synthesize touchLocation, challengeMode, gameStarted, 
 difToInt, scoreInt, highScore, ptime, etime, btime, top, beactive, btype,
 godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,resuming;
 
 +(id) scene
 {
 	CCScene *scene = [CCScene node];
-	Gameplay *layer = [Gameplay node];
+	Gameplay_Challenge *layer = [Gameplay_Challenge node];
 	[scene addChild: layer];
 	return scene;
 }
 
 -(id) init
 {
-	if( (self=[super init] )) { 
-        
-        
-        [self initAudio];
-        [self initScore];
-        [self initLabels]; 
-        [self initButtons];
-        [self initWorld];
-        [self initPlatforms];
-        [self initCharacters];
-        [self initEnemies];
-        [self initPowerups]; 
-        
-        [self resetNumbers];
-        
-        
-        [self schedule:@selector(gameLoop:) interval:0];
-        [self schedule:@selector(timerScore:) interval:1.0f];
-        [self schedule:@selector(timerPower:) interval:1.0f];
-        [self schedule:@selector(timerEffect:) interval:1.0f];
-        [self schedule:@selector(timerBadEffect:) interval:1.0f];    
-        [self schedule:@selector(timerDropin:) interval:1.0f];        
-
-        [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:YES]; 
-    }
+    challengeMode = YES; 
+    if(challengeMode) [self initChallenge];
+	[self initAudio];
+	[self initScore];
+	[self initLabels]; 
+	[self initButtons];
+	[self initWorld];
+	[self initPlatforms];
+	[self initCharacters];
+	[self initEnemies];
+	[self initPowerups]; 
+	[self resetNumbers];
+	
+	[self schedule:@selector(gameLoop:) interval:0];
+	[self schedule:@selector(timerScore:) interval:1.0f];
+   	[self schedule:@selector(timerPower:) interval:1.0f];
+    [self schedule:@selector(timerEffect:) interval:1.0f];
+    [self schedule:@selector(timerBadEffect:) interval:1.0f];    
+    [self schedule:@selector(timerDropin:) interval:1.0f];   
+	if( (self=[super init] )) { [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:YES]; }
 	return self;
 }
 
@@ -128,7 +123,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 - (void) gameMovement
 {
 	[self gameMovementDevil];
-    [self gameMovementEnemy];
+    if(!challengeMode) [self gameMovementEnemy];
 	[self gameMovementPowerup];	
 	[self gameMovementPlatform];
 	[self gameMovementBG];	
@@ -178,32 +173,32 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
             devil.visible = NO;
             switch (dtime) {
                 case 0:
-                    dropinNumber = [NSString stringWithFormat:@"Get Ready!",dtime];
+                    dropinNumber_chal = [NSString stringWithFormat:@"Get Ready!",dtime];
                     break;
                 case 1:
-                    dropinNumber = [NSString stringWithFormat:@"Get Ready!%",dtime]; 
+                    dropinNumber_chal = [NSString stringWithFormat:@"Get Ready!%",dtime]; 
                     break;
                 case 2:
-                    dropinNumber = [NSString stringWithFormat:@"%3",dtime]; 
+                    dropinNumber_chal = [NSString stringWithFormat:@"%3",dtime]; 
                     break;
                 case 3:
-                    dropinNumber = [NSString stringWithFormat:@"%2",dtime]; 
+                    dropinNumber_chal = [NSString stringWithFormat:@"%2",dtime]; 
                     break;
                 case 4:
-                    dropinNumber = [NSString stringWithFormat:@"%1",dtime]; 
+                    dropinNumber_chal = [NSString stringWithFormat:@"%1",dtime]; 
                     break;
                 default:
-                    dropinNumber = [NSString stringWithFormat:@"",dtime]; 
+                    dropinNumber_chal = [NSString stringWithFormat:@"",dtime]; 
                     break;
             }
-
+            
             if(dropinActive == NO) {
                 dropinLayer.visible = YES; 
                 dropinText.visible = YES;
                 dropinActive = YES; 
             }
             else {
-                [dropinText setString:dropinNumber];
+                [dropinText setString:dropinNumber_chal];
             }
         }
         else {
@@ -215,7 +210,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
             dropinText.visible = NO;
         }
     }
-    	
+    
 	if (devil.position.x != touchLocation.x && !devil.dead) 
 	{
 		float diff = touchLocation.x - devil.position.x;
@@ -271,10 +266,10 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
         if(enemy.birdPoopActive == NO) {
             int randomPoop = random() % 3000; 
             if(randomPoop > 2965) {
-            birdPoop = [Enemy spriteWithFile:@"poop.png" rect:CGRectMake(0,0,20,20)]; 
-            [birdPoop setPosition:ccp(enemy.position.x, enemy.position.y)]; 
-            [self addChild:birdPoop z:3];
-            enemy.birdPoopActive = YES; 
+                birdPoop = [Enemy spriteWithFile:@"poop.png" rect:CGRectMake(0,0,20,20)]; 
+                [birdPoop setPosition:ccp(enemy.position.x, enemy.position.y)]; 
+                [self addChild:birdPoop z:3];
+                enemy.birdPoopActive = YES; 
             }
         }
         if(enemy.birdPoopActive == YES) {
@@ -294,72 +289,72 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     if(enemy.enemyType == 3) {
         int randomPoop = random() % 200; 
         if(randomPoop > 150) {
-
-        if(enemy.meteorActive == NO) { 
-            int picker = random() % 6;
-            if(picker == 0) picker = random() % 6; 
-            if(picker == 0) picker = random() % 6; 
-            if(picker == 0) picker = 1; 
             
-            switch (picker)
-            {
-                case 1:
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
-                    enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 1;
-                    break; 
-                    
-                case 2: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor2.plist"];
-                    enemyemitter.position = ccp(-200, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 2; 
-                    break;
-                    
-                case 3: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor3.plist"];
-                    enemyemitter.position = ccp(screenWidth - random() % 300, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 3; 
-                    break;
-                    
-                case 4: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor4.plist"];
-                    enemyemitter.position = ccp(-200, screenHeight - random() % 150); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-                    
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 4; 
-                    break;
-                    
-                case 5: 
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor5.plist"];
-                    enemyemitter.position = ccp(screenWidth + 200, screenHeight - random() % 150); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 5; 
-                    break; 
-                    
-                default:
-                    enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
-                    enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
-                    [enemyemitter setAutoRemoveOnFinish:YES];
-                    
-                    [self addChild:enemyemitter z:3];
-                    enemy.direction = 1; 
-                    break;
+            if(enemy.meteorActive == NO) { 
+                int picker = random() % 6;
+                if(picker == 0) picker = random() % 6; 
+                if(picker == 0) picker = random() % 6; 
+                if(picker == 0) picker = 1; 
+                
+                switch (picker)
+                {
+                    case 1:
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
+                        enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 1;
+                        break; 
+                        
+                    case 2: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor2.plist"];
+                        enemyemitter.position = ccp(-200, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 2; 
+                        break;
+                        
+                    case 3: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor3.plist"];
+                        enemyemitter.position = ccp(screenWidth - random() % 300, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 3; 
+                        break;
+                        
+                    case 4: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor4.plist"];
+                        enemyemitter.position = ccp(-200, screenHeight - random() % 150); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 4; 
+                        break;
+                        
+                    case 5: 
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor5.plist"];
+                        enemyemitter.position = ccp(screenWidth + 200, screenHeight - random() % 150); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 5; 
+                        break; 
+                        
+                    default:
+                        enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"meteor.plist"];
+                        enemyemitter.position = ccp(screenWidth + 200, screenHeight + 200); 
+                        [enemyemitter setAutoRemoveOnFinish:YES];
+                        
+                        [self addChild:enemyemitter z:3];
+                        enemy.direction = 1; 
+                        break;
+                }
+                
+                enemy.meteorActive = YES; 
             }
-
-            enemy.meteorActive = YES; 
-        }
         }
         if(enemy.meteorActive == YES) {
             if(enemy.direction == 1) { 
@@ -392,7 +387,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
                     enemy.meteorActive = NO; 
                 }
             }
-
+            
         }
     }
     if(enemy.enemyType == 4) {
@@ -401,7 +396,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     }
     
 	int type = 0;
-
+    
     int height = difToInt/10;
     
     if(height > startWater) { enemy.visible = NO; type = 1; }
@@ -415,7 +410,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     if(height > startSpace) { enemy.visible = NO; type = 3; } 
     
     if(height > startHeaven) { if(enemyemitter.visible == YES) { enemyemitter.visible = NO; enemy.meteorActive = NO; }}
-        
+    
     // heaven/god
     if(height > startGod) { enemy.visible = YES; type = 4; }
     
@@ -448,6 +443,8 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 			platform[i].position = ccp(platform[i].position.x, platform[i].position.y - platform[i].velocity.y); 
 			platform[i].velocity = ccp(platform[i].velocity.x, platform[i].velocity.y + gravity);
 		}
+	if(challengeMode) 
+		fireLayer.position = ccp(fireLayer.position.x, fireLayer.position.y + 0.2);
 }
 
 - (void) gameMovementBG
@@ -466,7 +463,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 - (void) gameIntersects
 {
-    [self gameIntersectsEnemy];
+    if(!challengeMode)[self gameIntersectsEnemy];
 	[self gameIntersectsPlatform];
 	[self gameIntersectsPowerup];
 	[self gameIntersectsOther];
@@ -479,25 +476,25 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
         if(!enemy.dead)
         {
             if(jumpVelocity.y < jumpPower) {
-            if(jumpVelocity.y < 0)
-                jumpVelocity.y = + jumpPower;
-            else
-                jumpVelocity.y = 1;
+                if(jumpVelocity.y < 0)
+                    jumpVelocity.y = + jumpPower;
+                else
+                    jumpVelocity.y = 1;
                 
-            CCBlink *blink = [CCBlink actionWithDuration:1.0 blinks:3];
-            [devil runAction:blink];
+                CCBlink *blink = [CCBlink actionWithDuration:1.0 blinks:3];
+                [devil runAction:blink];
                 
-            [[SimpleAudioEngine sharedEngine] playEffect:@"bat-dead.mp3"];	
-            
-            enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"smoke.plist"];
-            enemyemitter.position = ccp(enemy.position.x,enemy.position.y); 
-            [self addChild:enemyemitter z:2];
-            [enemyemitter setAutoRemoveOnFinish:YES];            
-            [enemyemitter autorelease];            
-
-            enemy.visible = NO;
-            
-            [enemy kill];
+                [[SimpleAudioEngine sharedEngine] playEffect:@"bat-dead.mp3"];	
+                
+                enemyemitter = [[CCParticleExplosion alloc] initWithFile:@"smoke.plist"];
+                enemyemitter.position = ccp(enemy.position.x,enemy.position.y); 
+                [self addChild:enemyemitter z:2];
+                [enemyemitter setAutoRemoveOnFinish:YES];            
+                [enemyemitter autorelease];            
+                
+                enemy.visible = NO;
+                
+                [enemy kill];
             }
         }
     }
@@ -516,7 +513,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
         
         if(emitter != NULL && !emitter.active) { [self removeChild:emitter cleanup:YES]; emitter = NULL; } 
         if(platform[i].position.y < screenHeight) {
-        if(CGRectIntersectsRect([devil getBoundingRect],[platform[i] getBoundingRect]) && pue.effect != @"boost") 
+            if(CGRectIntersectsRect([devil getBoundingRect],[platform[i] getBoundingRect]) && pue.effect != @"boost") 
             {			
                 if(platform[i].dead == NO && [platform[i] touched])
                 {
@@ -528,7 +525,12 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
                         if(jumpVelocity.y < jumpPower) 
                         {
                             jumpVelocity.y = jumpPower;
-                            [[SimpleAudioEngine sharedEngine] playEffect:platformSFX];
+                            [[SimpleAudioEngine sharedEngine] playEffect:platformSFX_chal];
+                        }
+                        
+                        if(challengeMode) 
+                        {
+                            fireLayer.position = ccp(fireLayer.position.x, fireLayer.position.y - 3);
                         }
                     }
                 }        
@@ -543,6 +545,12 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 		if (devil.lives == 0) [self endGame]; 
 	}
 	
+	if(challengeMode) 
+		if(CGRectIntersectsRect([devil getBoundingRect], [fireLayer boundingBox])) 
+		{
+			jumpVelocity.y = gravity; 
+			[self endGame]; 
+		}
 }
 
 - (void) gameIntersectsPowerup
@@ -561,56 +569,59 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 - (void) gameIntersectsOther
 {
-        if(CGRectIntersectsRect([devil getBoundingRect],[bouncycastle getCustomRect]))
-        {
-            [[SimpleAudioEngine sharedEngine] playEffect:@"toing-01-bass.mp3"];	
-            if(bouncycastle.imageSwapped == NO) {
-                imageSwap = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"bouncy-castle-warp.png"]]; 
-                [bouncycastle setTexture: imageSwap];                
-                bouncycastle.imageSwapped = YES; 
-                [imageSwap release];
-            }
-            jumpVelocity.y = + (jumpPower + 4);
-        }
-        if(bouncycastle.imageSwapped == YES && devil.position.y > 180) {
-            imageSwap = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"bouncycastle-bg.png"]]; 
-            [bouncycastle setTexture: imageSwap]; 
+    if(CGRectIntersectsRect([devil getBoundingRect],[bouncycastle getCustomRect]))
+    {
+        [[SimpleAudioEngine sharedEngine] playEffect:@"toing-01-bass.mp3"];	
+        if(bouncycastle.imageSwapped == NO) {
+            imageSwap = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"bouncy-castle-warp.png"]]; 
+            [bouncycastle setTexture: imageSwap];                
+            bouncycastle.imageSwapped = YES; 
             [imageSwap release];
-            bouncycastle.imageSwapped = NO; 
         }
-
-    if(enemy.birdPoopActive == YES) {
-        if( CGRectIntersectsRect([devil getBoundingRect],[birdPoop getBoundingRect]))
-        {
-            if(birdPoop.visible == YES) {
-                birdPoop.visible = NO;    
-            
-                CCBlink *blink = [CCBlink actionWithDuration:1.0 blinks:3];
-                [devil runAction:blink];
-                beactive = YES; 
-                btype = 1; 
-                btime = 0; 
+        jumpVelocity.y = + (jumpPower + 4);
+    }
+    if(bouncycastle.imageSwapped == YES && devil.position.y > 180) {
+        imageSwap = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"bouncycastle-bg.png"]]; 
+        [bouncycastle setTexture: imageSwap]; 
+        [imageSwap release];
+        bouncycastle.imageSwapped = NO; 
+    }
+    if(!challengeMode) {
+        if(enemy.birdPoopActive == YES) {
+            if( CGRectIntersectsRect([devil getBoundingRect],[birdPoop getBoundingRect]))
+            {
+                if(birdPoop.visible == YES) {
+                    birdPoop.visible = NO;    
+                    
+                    CCBlink *blink = [CCBlink actionWithDuration:1.0 blinks:3];
+                    [devil runAction:blink];
+                    beactive = YES; 
+                    btype = 1; 
+                    btime = 0; 
+                }
+            }
+        }
+        
+        if(enemy.bubbleActive == YES) {
+            if( CGRectIntersectsRect([devil getBoundingRect],[bubble getBoundingRect]))
+            {
+                if(bubble.visible == YES) {
+                    bubble.visible = NO;    
+                    beactive = YES; 
+                    btype = 0; 
+                    btime = 0; 
+                    
+                }
             }
         }
     }
     
-    if(enemy.bubbleActive == YES) {
-        if( CGRectIntersectsRect([devil getBoundingRect],[bubble getBoundingRect]))
-        {
-            if(bubble.visible == YES) {
-                bubble.visible = NO;    
-                beactive = YES; 
-                btype = 0; 
-                btime = 0; 
-                
-            }
-        }
-    }
+    
 }
 
 - (void) gameGenerate
 {
-    [self gameGenerateEnemy];
+    if(!challengeMode) [self gameGenerateEnemy];
 	[self gameGeneratePlatform];	
 	if(ptime == ptimer)[self gameGeneratePowerup];
 }
@@ -624,7 +635,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 {
     if(!pu.visible)
     {
-        [pu generate:[pu typepicker] challengemode:0];        
+        [pu generate:[pu typepicker] challengemode:challengeMode];        
         ptime = 0;
     }
 }
@@ -649,7 +660,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 			
 			float x = random() % iViewWidthMinusPlatformWidth; 
 			x = x + 22.5f; 
-
+            
 			float y = maxheight + mingap + (random() % maxoffset);
 			if(y < 510) y = 510; 
 			if(pu.visible)
@@ -758,6 +769,9 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
         bouncycastle.position = ccp(bouncycastle.position.x, -100);
         [self removeChild:bcfx cleanup:YES];
         
+        // Reset Freeze
+        if(challengeMode) [fireLayer setColor:ccc3(255, 0, 0)];
+        
         // Reset All
         pue.active = NO;
         etime = 0; 
@@ -769,28 +783,28 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     switch(betype)
     {
         case 0:
-                if(btime <= 3) { 
-                    if(devil.imageSwapped == NO) { 
-                        bubbleimageSwap = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"devil-bubble.png"]]; 
-                        [devil setTexture: bubbleimageSwap];
-                        [bubbleimageSwap autorelease];
-                        devil.imageSwapped = YES; 
-                        devil.textureRect = CGRectMake(0,0,80,80);
-                    }
+            if(btime <= 3) { 
+                if(devil.imageSwapped == NO) { 
+                    bubbleimageSwap = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"devil-bubble.png"]]; 
+                    [devil setTexture: bubbleimageSwap];
+                    [bubbleimageSwap autorelease];
+                    devil.imageSwapped = YES; 
+                    devil.textureRect = CGRectMake(0,0,80,80);
                 }
-                else { 
-                    bubbleimageSwapRevert = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"Devil.png"]]; 
-                    [devil setTexture: bubbleimageSwapRevert];
-                    [bubbleimageSwapRevert autorelease];
-                    devil.imageSwapped = NO; 
-                    devil.textureRect = CGRectMake(0,0,50,56);
-
-                    beactive = NO;
-                    btime = 0; 
-                }
+            }
+            else { 
+                bubbleimageSwapRevert = [[CCTexture2D alloc] initWithImage:[UIImage imageNamed:@"Devil.png"]]; 
+                [devil setTexture: bubbleimageSwapRevert];
+                [bubbleimageSwapRevert autorelease];
+                devil.imageSwapped = NO; 
+                devil.textureRect = CGRectMake(0,0,50,56);
+                
+                beactive = NO;
+                btime = 0; 
+            }
             break;
-
-        // Bird
+            
+            // Bird
         case 1:
             if(btime <= 1.5) {
                 if(devil.imageSwapped == NO) { 
@@ -817,7 +831,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
                     godpowerType = random() % 3;
                     if(godpowerType == 0) godpowerType = random() % 3;
                     if(godpowerType == 0) godpowerType = 1;            
-            
+                    
                     switch(godpowerType) {
                         case 1: 
                             godpower = 1; 
@@ -848,12 +862,22 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 {
 	if (difference < 0) 
 	{
+		if(!challengeMode)
+		{
 			if(resuming == NO) {
                 NSString *updateScore = [NSString stringWithFormat:@"Current: %dm",difToInt/10]; 
                 [scoreCounter setString:updateScore];
                 scoreCounter.position = ccp((screenWidth - scoreCounter.contentSize.width/2) - 5, scoreCounter.position.y);
             }
+		}		
 	} 
+	
+	if(challengeMode == YES)
+	{
+		NSString *updateScore = [NSString stringWithFormat:@"Current: %ds",scoreInt]; 
+		[scoreCounter setString:updateScore];
+		scoreCounter.position = ccp((screenWidth - scoreCounter.contentSize.width/2) - 5, scoreCounter.position.y);			
+	}		
 }
 
 
@@ -874,8 +898,8 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 - (void) initButtons
 {
 	CCMenuItemImage *pauseBtn = [CCMenuItemImage
-								 itemFromNormalImage:pauseIMG
-								 selectedImage:pauseIMG
+								 itemFromNormalImage:pauseIMG_chal
+								 selectedImage:pauseIMG_chal
 								 target:self
 								 selector:@selector(pauseGame:)];
 	CCMenu *pauseMenu = [CCMenu menuWithItems: pauseBtn, nil];
@@ -898,7 +922,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 - (void) initCharacters 
 {
-	devil = [Player spriteWithFile:devilIMG rect:CGRectMake(0, 0, 50, 56)]; 
+	devil = [Player spriteWithFile:devilIMG_chal rect:CGRectMake(0, 0, 50, 56)]; 
 	[devil setPosition:ccp(140,40)];
 	[self addChild:devil z:4];
 	devil.imageSwapped = NO; 
@@ -910,32 +934,34 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 - (void) initEnemies
 {
-	enemy = [Enemy spriteWithFile:@"bat.png" rect:CGRectMake(0,0,75,30)];
-	[enemy setPosition:ccp(-100,3000)];
-	[self addChild: enemy z:4]; 	
-	enemy.ybase = 3000;
-    enemy.imageSwapped = NO;
-    enemy.enemyType = 0; 
-    enemy.birdPoopActive = NO; 
-    enemy.bubbleActive = NO; 
-    enemy.meteorActive = NO; 
+    if(!challengeMode) {
+        enemy = [Enemy spriteWithFile:@"bat.png" rect:CGRectMake(0,0,75,30)];
+        [enemy setPosition:ccp(-100,3000)];
+        [self addChild: enemy z:4]; 	
+        enemy.ybase = 3000;
+        enemy.imageSwapped = NO;
+        enemy.enemyType = 0; 
+        enemy.birdPoopActive = NO; 
+        enemy.bubbleActive = NO; 
+        enemy.meteorActive = NO; 
+    }
 }
 
 - (void) initLabels 
 {
-	CCLabel *highscoreCounter = [CCLabel labelWithString:highScoreText fontName:font fontSize:16];
+	CCLabel *highscoreCounter = [CCLabel labelWithString:highScoreText fontName:font_chal fontSize:16];
 	[highscoreCounter setPosition:ccp((screenWidth - highscoreCounter.contentSize.width/2) - 5,470)];
 	[self addChild:highscoreCounter z:10];
 	
-	scoreCounter = [CCLabel labelWithString:currentScoreText fontName:font fontSize:16];
+	scoreCounter = [CCLabel labelWithString:currentScoreText fontName:font_chal fontSize:16];
 	[scoreCounter setPosition:ccp((screenWidth - scoreCounter.contentSize.width/2) - 5,452)];
 	[self addChild:scoreCounter z:10];
-    	
+	
 	int x = 300;
 	int y = 400; 
 	for(int l = 0; l <= 3; l++)
 	{
-		lifeCounter[l] = [CCSprite spriteWithFile:lifeIMG];
+		lifeCounter[l] = [CCSprite spriteWithFile:lifeIMG_chal];
 		[lifeCounter[l] setPosition:ccp(x,y)];
 		[self addChild:lifeCounter[l] z:10];
 		y -= 38;
@@ -943,18 +969,18 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     lifeCounter[3].visible = NO; 
     
     
-    dropinNumber = [NSString stringWithFormat:@"0"];
+    dropinNumber_chal = [NSString stringWithFormat:@"0"];
     
     dropinLayer = [CCColorLayer layerWithColor: ccc4(0, 0, 0, 100) width: screenWidth height: screenHeight];
     dropinLayer.position = ccp(0,0);
     [self addChild: dropinLayer z:11];
-    dropinText = [CCLabel labelWithString:dropinNumber fontName:font fontSize:40];
+    dropinText = [CCLabel labelWithString:dropinNumber_chal fontName:font_chal fontSize:40];
     [dropinText setPosition:ccp(screenWidth/2,screenHeight/2)];
     [self addChild:dropinText z:12];
     
     dropinLayer.visible = NO;
     dropinText.visible = NO;
-
+    
 }
 
 - (void) initPlatforms 
@@ -963,7 +989,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
     int y = 0; 
 	for (int i = 0; i < platformCount; i++) 
 	{
-		platform[i] = [Platform spriteWithFile:platformIMG rect:CGRectMake(0,0,24, 20)];
+		platform[i] = [Platform spriteWithFile:platformIMG_chal rect:CGRectMake(0,0,24, 20)];
 		
 		if(i == 0) { x = 225; y = 390; }
 		if(i == 1) { x = 50;  y = 300; }
@@ -979,7 +1005,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 		[platform[i] setPosition:ccp(x,y)];
 		[self addChild:platform[i]  z:2];
 	}
-	gameFloor = [Platform spriteWithFile:floorIMG rect:CGRectMake(0,0,320,8)];
+	gameFloor = [Platform spriteWithFile:floorIMG_chal rect:CGRectMake(0,0,320,8)];
 	[gameFloor setPosition:ccp(160,4)];
 	[self addChild:gameFloor  z:2];	
 }
@@ -1003,7 +1029,20 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 
 - (void) initScore
 {
+	if(challengeMode) 
+	{
+		if(![[NSUserDefaults standardUserDefaults] integerForKey:@"highScore_challenge"]) 
+			[[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"highScore_challenge"];
+		
+		highScore = [[NSUserDefaults standardUserDefaults] integerForKey:@"highScore_challenge"];
+		
+		highScoreText = [NSString stringWithFormat:@"Highest: %ds",highScore]; 
+		currentScoreText = [NSString stringWithFormat:@"Current: %ds",0]; 
+        
+	}
 	
+	else 
+	{
 		if(![[NSUserDefaults standardUserDefaults] integerForKey:@"highScore"]) 
 			[[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"highScore"];
 		
@@ -1011,6 +1050,8 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 		
 		highScoreText = [NSString stringWithFormat:@"Highest: %dm",highScore]; 
 		currentScoreText = [NSString stringWithFormat:@"Current: %dm",0]; 
+		
+	}
 }
 
 - (void) initWorld
@@ -1129,12 +1170,15 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 }
 - (void) mainMenu: (id) sender
 {
+	if (challengeMode)
+		[[CCDirector sharedDirector] replaceScene:[MainMenu_challenge scene]];
+	else
 		[[CCDirector sharedDirector] replaceScene:[MainMenu scene]];
 }
 
 - (void) restartGame: (id) sender
 {
-	[[CCDirector sharedDirector] replaceScene:[Gameplay scene]];
+	[[CCDirector sharedDirector] replaceScene:[Gameplay_Challenge scene]];
 }
 
 /********************************************************************************************************************************/
@@ -1149,9 +1193,10 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 		pauseLayer.position = ccp(0,0);
 		[self addChild: pauseLayer z:11];
 		
-		pauseText = [CCLabel labelWithString:@"PAUSED" fontName:font fontSize:40];
+		pauseText = [CCLabel labelWithString:@"PAUSED" fontName:font_chal fontSize:40];
 		[pauseText setPosition:ccp(screenWidth/2,screenHeight/2)];
 		[self addChild:pauseText z:12];		
+		
 	}
 }
 - (void) endGame
@@ -1163,13 +1208,13 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 	pauseLayer.position = ccp(0,0);
 	[self addChild: pauseLayer z:11];
 	
-	CCSprite *deadScreen = [CCSprite spriteWithFile:deadIMG];
+	CCSprite *deadScreen = [CCSprite spriteWithFile:deadIMG_chal];
 	[deadScreen setPosition:ccp(screenWidth/2,screenHeight/2)];
 	[self addChild:deadScreen z:13];
 	
 	CCMenuItemImage *mainmenu = [CCMenuItemImage
-								 itemFromNormalImage:mainmenuIMG
-								 selectedImage:mainmenuIMG
+								 itemFromNormalImage:mainmenuIMG_chal
+								 selectedImage:mainmenuIMG_chal
 								 target:self
 								 selector:@selector(mainMenu:)];
 	CCMenu *deadmenu1 = [CCMenu menuWithItems: mainmenu, nil];
@@ -1177,19 +1222,43 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 	[self addChild:deadmenu1 z:14];
 	
 	CCMenuItemImage *restartbtn = [CCMenuItemImage
-								   itemFromNormalImage:restartmenuIMG
-								   selectedImage:restartmenuIMG
+								   itemFromNormalImage:restartmenuIMG_chal
+								   selectedImage:restartmenuIMG_chal
 								   target:self
 								   selector:@selector(restartGame:)];
 	CCMenu *deadmenu2 = [CCMenu menuWithItems: restartbtn, nil];
 	[deadmenu2 setPosition:ccp(255,115)];
 	[self addChild:deadmenu2 z:14];
 	
-	
+	if(challengeMode)
+	{
+		NSString *endScoreText = [NSString stringWithFormat:@"%ds",scoreInt];
+		CCLabel *endScore = [CCLabel labelWithString:endScoreText fontName:font_chal fontSize:20];
+		[endScore setPosition:ccp(138,186)];
+		[self addChild:endScore z:14];
+		
+		
+		if(scoreInt > [[NSUserDefaults standardUserDefaults] integerForKey:@"highScore_challenge"])
+		{
+			[[NSUserDefaults standardUserDefaults] setInteger:scoreInt forKey:@"highScore_challenge"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+            
+            if([[[UIDevice currentDevice] systemVersion] compare:@"4.2" options:NSNumericSearch] == NSOrderedDescending)
+            {
+                GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];            
+                if(localPlayer.isAuthenticated) 
+                {
+                    [self reportScore:scoreInt forCategory:@"ldboard2"];   
+                }
+            }
+		}
+	}
+	else
+	{
 		int score = difToInt/10; 
 		
 		NSString *endScoreText = [NSString stringWithFormat:@"%dm",score];
-		CCLabel *endScore = [CCLabel labelWithString:endScoreText fontName:font fontSize:20];
+		CCLabel *endScore = [CCLabel labelWithString:endScoreText fontName:font_chal fontSize:20];
 		[endScore setPosition:ccp(145,186)];
 		[self addChild:endScore z:14];
 		
@@ -1208,21 +1277,21 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
                 }
             }
 		}
-
+	}
 }
 
 /* GAME CENTER STUFF */
 - (void) reportScore: (int64_t) score forCategory: (NSString*) category
 {
-        GKScore *scoreReporter = [[[GKScore alloc] initWithCategory:category] autorelease];
-        scoreReporter.value = score;
-         
-        [scoreReporter reportScoreWithCompletionHandler:^(NSError *error) {
-            if (error != nil)
-            {
-                // handle the reporting error
-            }
-        }];
+    GKScore *scoreReporter = [[[GKScore alloc] initWithCategory:category] autorelease];
+    scoreReporter.value = score;
+    
+    [scoreReporter reportScoreWithCompletionHandler:^(NSError *error) {
+        if (error != nil)
+        {
+            // handle the reporting error
+        }
+    }];
 }
 
 /********************************************************************************************************************************/
@@ -1233,6 +1302,7 @@ godpower,godpoweractive, godpowerType,godpowerEffectActive,dtime,dropinActive,re
 	devil.lives = 3;
 	gameStarted = NO;
 	difToInt = 0;
+	if(challengeMode) scoreInt = 0;
     etime = 0;
     ptime = 0;
     btime = 0;

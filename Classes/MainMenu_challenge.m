@@ -9,6 +9,7 @@
 #import "MainMenu_challenge.h"
 
 #import "Gameplay.h"
+#import "Gameplay_Challenge.h"
 #import "SimpleAudioEngine.h"
 
 
@@ -130,13 +131,7 @@ NSURL *url;
 
 - (void) startGame: (id) sender
 {
-	CCScene *scene = [CCScene node];
-	Gameplay *layer = [Gameplay node];
-	layer.challengeMode = YES;
-	[layer buildGame]; 
-	[scene addChild: layer];
-	
-	[[CCDirector sharedDirector] replaceScene:scene];	
+	[[CCDirector sharedDirector] replaceScene:[Gameplay_Challenge scene]];
 }
 
 
